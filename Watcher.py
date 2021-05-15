@@ -19,7 +19,7 @@ class Watcher:
                 time.sleep(1)
         except:
             self.observer.stop()
-            print("Error")
+            print("Process ended")
 
         self.observer.join()
 

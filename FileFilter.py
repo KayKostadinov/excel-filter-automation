@@ -13,7 +13,7 @@ class FileFilter:
                       file_type=None,
                       use_columns=['Date', 'From', 'Subject'],
                       from_date=tt.get_start_date(),
-                      export_path='filtered'
+                      export_path=f"{os.path.expanduser('~/Desktop')}/filtered"
                       ):
 
         # read initial file
@@ -47,7 +47,7 @@ class FileFilter:
 
         # export excel
         try:
-            os.mkdir(f'./{export_path}')
+            os.mkdir(export_path)
         except:
             pass
 
