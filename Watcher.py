@@ -1,26 +1,42 @@
-import os
 import time
-import logging
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, LoggingEventHandler
+from watchdog.events import FileSystemEventHandler
+from FileFilter import FileFilter as ff
 
 
 class Watcher:
 
-    @staticmethod
-    def watch(directory):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s - %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S')
-        path = directory
-        event_handler = LoggingEventHandler()
-        observer = Observer()
-        observer.schedule(event_handler, path, recursive=True)
-        observer.start()
-        try:
-            while observer.is_alive():
-                observer.join(1)
-        except KeyboardInterrupt:
-            observer.stop()
-        observer.join()
+    def __init__(self, path):
+        self.observer = Observer()
+        self.directory = path
 
+    def run(self):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, self.directory, recursive=True)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except:
+            self.observer.stop()
+            print("Error")
+
+        self.observer.join()
+
+
+class Handler(FileSystemEventHandler):
+
+    def on_any_event(self, event):
+        # if event.is_directory:
+        #     return None
+        if event.event_type == 'created':
+            path = event.src_path
+            name = path.split('/')[-1]
+            name, file_type = name.split('.')
+            # test
+            print({'name': name, 'type': file_type})
+
+            # filter document
+            # TODO: check for correct name of file
+            if name == 'Book2':
+                ff.awaiting_name(file_path=path, file_type=file_type)
